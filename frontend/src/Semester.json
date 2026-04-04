@@ -1,0 +1,147 @@
+[
+  {
+    "school": "School of Engineering & Technology (SOET)",
+    "courses": [
+      {
+        "courseName": "B.Tech Computer Science and Engineering (General)",
+        "semesters": [
+          {
+            "semester": "Semester 1",
+            "subjects": [
+              "Applied Mathematics - I ",
+              "Applied Physics",
+              "Programming for Problem Solving (C/Python)",
+              "Basic Electrical Engineering",
+              "Engineering Graphics & Design",
+              "English Language & Communication Skills"
+            ]
+          },
+          {
+            "semester": "Semester 2",
+            "subjects": [
+              "Applied Mathematics - II ",
+              "Applied Chemistry",
+              "Data Structures",
+              "Object Oriented Programming (C++/Java)",
+              "Basic Electronics Engineering",
+              "Environmental Science"
+            ]
+          },
+          {
+            "semester": "Semester 3",
+            "subjects": [
+              "Discrete Mathematics",
+              "Digital Electronics & Logic Design",
+              "Data Structures and Algorithms",
+              "Computer Organization and Architecture",
+              "Operating Systems"
+            ]
+          },
+          {
+            "semester": "Semester 4",
+            "subjects": [
+              "Probability and Statistics",
+              "Design and Analysis of Algorithms (DAA)",
+              "Database Management Systems (DBMS)",
+              "Theory of Computation (TOC)",
+              "Software Engineering"
+            ]
+          },
+          {
+            "semester": "Semester 5",
+            "subjects": [
+              "Computer Networks",
+              "Formal Languages and Automata Theory",
+              "Microprocessors and Microcontrollers",
+              "Artificial Intelligence (AI)",
+              "Elective I (e.g., Python Programming)"
+            ]
+          },
+          {
+            "semester": "Semester 6",
+            "subjects": [
+              "Compiler Design",
+              "Machine Learning (ML)",
+              "Cloud Computing",
+              "Web Technologies",
+              "Elective II (e.g., IoT)"
+            ]
+          },
+          {
+            "semester": "Semester 7",
+            "subjects": [
+              "Cryptography and Network Security",
+              "Big Data Analytics",
+              "Elective III (e.g., Computer Graphics)",
+              "Open Elective I",
+              "Project Work (Phase I)"
+            ]
+          },
+          {
+            "semester": "Semester 8",
+            "subjects": [
+              "Distributed Systems",
+              "Elective IV ",
+              "Open Elective II",
+              "Project Work (Phase II)"
+            ]
+          }
+        ]
+      },
+      {
+        "courseName": "B.Tech CSE (UX/UI Specialization)",
+        "semesters": [
+          {
+            "semester": "Semester 1",
+            "subjects": [
+              "Applied Mathematics - I",
+              "Introduction to Design Thinking",
+              "Programming Fundamentals",
+              "Visual Communication Principles",
+              "Engineering Graphics"
+            ]
+          },
+          {
+            "semester": "Semester 2",
+            "subjects": [
+              "Applied Mathematics - II",
+              "Human-Computer Interaction (HCI)",
+              "Object Oriented Programming",
+              "Digital Imaging and Editing",
+              "Environmental Science"
+            ]
+          },
+          {
+            "semester": "Semester 3",
+            "subjects": [
+              "Data Structures & Algorithms",
+              "Computer Graphics",
+              "User Experience (UX) Research Methods",
+              "Introduction to UI Design and Tools",
+              "Web Development Basics (HTML/CSS)"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "school": "School of Design",
+    "courses": [
+      {
+        "courseName": "B.Des in Interaction Design",
+        "semesters": [
+          {
+            "semester": "Semester 1",
+            "subjects": [
+              "Elements of Design",
+              "Design Drawing and Visualization",
+              "Fundamentals of Material & Form",
+              "Introduction to Cultural Studies"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
