@@ -66,10 +66,8 @@ class StudentCourseView extends Component {
     }
 
     const topics = this.parseTopicsFromSyllabus(course.syllabus_text);
-    // Videos saved by teacher when generating the class code
     const selectedVideos = course.selectedVideos || [];
 
-    // Group videos by topic
     const videosByTopic = {};
     selectedVideos.forEach(v => {
       const key = v.topic || 'General';
@@ -227,31 +225,70 @@ class StudentCourseView extends Component {
                         </div>
 
                         <div className="scv-video-grid">
-                          {videos.map(video => (
-                           <a
-  key={video.videoId}
-  href={video.isPaid ? "/" : `https://www.youtube.com/watch?v=${video.videoId}`}
-  onClick={(e) => video.isPaid && e.preventDefault()}
-  target={video.isPaid ? "_self" : "_blank"}
-  rel="noopener noreferrer"
-  className="scv-video-card"
->
-                              {/* Thumbnail */}
-                              <div className="scv-video-thumb">
-                                {video.thumbnail ? (
-                                  <img src={video.thumbnail} alt={video.title} />
-                                ) : video.platformLogo ? (
-                                  <div className="scv-video-platform-thumb">
-                                    <img src={video.platformLogo} alt={video.platform} />
+                          {videos.map((video) => {
+                            if (video.isPaid) {
+                              return (
+                                <div key={video.videoId} className="scv-video-card">
+                                  {/* Thumbnail */}
+                                  <div className="scv-video-thumb">
+                                    {video.thumbnail ? (
+                                      <img src={video.thumbnail} alt={video.title} />
+                                    ) : video.platformLogo ? (
+                                      <div className="scv-video-platform-thumb">
+                                        <img src={video.platformLogo} alt={video.platform} />
+                                      </div>
+                                    ) : (
+                                      <div className="scv-video-thumb-placeholder">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                          <polygon points="23 7 16 12 23 17 23 7"/>
+                                          <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                                        </svg>
+                                      </div>
+                                    )}
+                                    {/* Paid badge */}
+                                    <div className="scv-paid-badge">
+                                      {video.platform}
+                                    </div>
                                   </div>
-                                ) : (
-                                  <div className="scv-video-thumb-placeholder">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                                  {/* Info */}
+                                  <div className="scv-video-info">
+                                    <p className="scv-video-title">{video.title}</p>
+                                    {video.instructor && (
+                                      <p className="scv-video-instructor">{video.instructor}</p>
+                                    )}
+                                    <div className="scv-video-meta-row">
+                                      <span className="scv-video-price">{video.price}</span>
+                                    </div>
                                   </div>
-                                )}
+                                </div>
+                              );
+                            }
 
-                                {/* Play overlay — only for YouTube */}
-                                {!video.isPaid && (
+                            return (
+                              <a
+                                key={video.videoId}
+                                href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="scv-video-card"
+                              >
+                                {/* Thumbnail */}
+                                <div className="scv-video-thumb">
+                                  {video.thumbnail ? (
+                                    <img src={video.thumbnail} alt={video.title} />
+                                  ) : video.platformLogo ? (
+                                    <div className="scv-video-platform-thumb">
+                                      <img src={video.platformLogo} alt={video.platform} />
+                                    </div>
+                                  ) : (
+                                    <div className="scv-video-thumb-placeholder">
+                                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                        <polygon points="23 7 16 12 23 17 23 7"/>
+                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                                      </svg>
+                                    </div>
+                                  )}
+                                  {/* Play overlay */}
                                   <div className="scv-play-overlay">
                                     <div className="scv-play-btn">
                                       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -259,33 +296,25 @@ class StudentCourseView extends Component {
                                       </svg>
                                     </div>
                                   </div>
-                                )}
-
-                                {/* Paid badge */}
-                                {video.isPaid && (
-                                  <div className="scv-paid-badge">
-                                    {video.platform}
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Info */}
-                              <div className="scv-video-info">
-                                <p className="scv-video-title">{video.title}</p>
-                                {video.instructor && <p className="scv-video-instructor">{video.instructor}</p>}
-                                <div className="scv-video-meta-row">
-                                  {video.isPaid ? (
-                                    <span className="scv-video-price">{video.price}</span>
-                                  ) : (
+                                </div>
+                                {/* Info */}
+                                <div className="scv-video-info">
+                                  <p className="scv-video-title">{video.title}</p>
+                                  {video.instructor && (
+                                    <p className="scv-video-instructor">{video.instructor}</p>
+                                  )}
+                                  <div className="scv-video-meta-row">
                                     <span className="scv-video-free">
-                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.28 6.28 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.28 6.28 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/>
+                                      </svg>
                                       YouTube · Free
                                     </span>
-                                  )}
+                                  </div>
                                 </div>
-                              </div>
-                            </a>
-                          ))}
+                              </a>
+                            );
+                          })}
                         </div>
                       </div>
                     ))}
