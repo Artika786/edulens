@@ -41,7 +41,7 @@ class Login extends React.Component {
     if (!this.validateEmail(this.state.email)) {
       return swal({ text: "Please enter a valid email address", icon: "error" });
     }
-    axios.post("http://localhost:2000/login", {
+    axios.post("https://edulens-backend-nxmw.onrender.com/login", {
       email: this.state.email,
       password: this.state.password,
       role: this.state.role

@@ -64,7 +64,7 @@ class CourseDetail extends Component {
   getCourseDetail = (id) => {
     this.setState({ loading: true });
 
-    axios.get(`http://localhost:2000/get-course-by-id/${id}`, { 
+    axios.get(`https://edulens-backend-nxmw.onrender.com/get-course-by-id/${id}`, { 
       headers: { token: this.state.token }
     })
     .then((res) => {
@@ -92,7 +92,7 @@ class CourseDetail extends Component {
   getYouTubeRecommendations = (topicQuery) => {
     this.setState({ loadingVideos: true, recommendedVideos: [] });
     
-    axios.get(`http://localhost:2000/search-videos/${encodeURIComponent(topicQuery)}?maxResults=6`, {
+    axios.get(`https://edulens-backend-nxmw.onrender.com/search-videos/${encodeURIComponent(topicQuery)}?maxResults=6`, {
       headers: { token: this.state.token }
     })
     .then(response => {
@@ -187,7 +187,7 @@ class CourseDetail extends Component {
     }
 
     // AFTER — sends selectedVideos so they get saved to the DB
-axios.post('http://localhost:2000/generate-class-code', 
+axios.post('https://edulens-backend-nxmw.onrender.com/generate-class-code', 
   {
     courseId: course._id,
     selectedVideos: this.state.selectedVideos.map(v => ({

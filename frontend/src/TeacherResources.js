@@ -30,7 +30,7 @@ class TeacherResources extends Component {
   }
 
   fetchCourses = () => {
-    axios.get('http://localhost:2000/get-courses', {
+    axios.get('https://edulens-backend-nxmw.onrender.com/get-courses', {
       headers: { token: this.state.token }
     })
     .then(res => {
@@ -53,7 +53,7 @@ class TeacherResources extends Component {
       loadingDetail: { ...prev.loadingDetail, [courseId]: true } 
     }));
     
-    axios.get(`http://localhost:2000/get-course-by-id/${courseId}`, {
+    axios.get(`https://edulens-backend-nxmw.onrender.com/get-course-by-id/${courseId}`, {
       headers: { token: this.state.token }
     })
     .then(res => {
@@ -108,7 +108,7 @@ class TeacherResources extends Component {
       savingVideos: { ...prev.savingVideos, [courseId]: true } 
     }));
 
-    axios.post('http://localhost:2000/save-course-videos',
+    axios.post('https://edulens-backend-nxmw.onrender.com/save-course-videos',
       {
         courseId,
         selectedVideos: localVideos.map(v => ({
@@ -159,7 +159,7 @@ class TeacherResources extends Component {
       generatingCode: { ...prev.generatingCode, [courseId]: true } 
     }));
     
-    axios.post('http://localhost:2000/generate-class-code',
+    axios.post('https://edulens-backend-nxmw.onrender.com/generate-class-code',
       { courseId, selectedVideos: [] },
       { 
         headers: { 
@@ -204,7 +204,7 @@ class TeacherResources extends Component {
     
     const updated = detail.selectedVideos.filter(v => v.videoId !== videoId);
 
-    axios.post('http://localhost:2000/save-course-videos',
+    axios.post('https://edulens-backend-nxmw.onrender.com/save-course-videos',
       { courseId, selectedVideos: updated },
       { 
         headers: { 

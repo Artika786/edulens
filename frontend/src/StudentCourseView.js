@@ -185,7 +185,7 @@ class StudentCourseView extends Component {
                     </div>
                     <h3 className="scv-file-title">Syllabus Document</h3>
                     <p className="scv-file-sub">Download the complete course syllabus provided by your teacher.</p>
-                    <a href={`http://localhost:2000/${course.syllabus_file_path}`} target="_blank" rel="noopener noreferrer" className="scv-download-btn">
+                    <a href={`https://edulens-backend-nxmw.onrender.com/${course.syllabus_file_path}`} target="_blank" rel="noopener noreferrer" className="scv-download-btn">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       Download Syllabus
                     </a>
