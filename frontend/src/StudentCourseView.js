@@ -230,7 +230,8 @@ class StudentCourseView extends Component {
                           {videos.map(video => (
                             <a
                               key={video.videoId}
-                              href={video.isPaid ? '#' : `https://www.youtube.com/watch?v=${video.videoId}`}
+                             href={video.isPaid ? undefined : `https://www.youtube.com/watch?v=${video.videoId}`}
+                             onClick={(e) => video.isPaid && e.preventDefault()}
                               target={video.isPaid ? '_self' : '_blank'}
                               rel="noopener noreferrer"
                               className="scv-video-card"
