@@ -12,7 +12,10 @@ const axios = require('axios');
 const nodemailer = require('nodemailer');
 
 // Database connection
-mongoose.connect("mongodb://localhost/courseDB", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 var fs = require('fs');
 
 // --- OTP/EMAIL CONFIGURATION ---
@@ -940,8 +943,10 @@ app.post("/student/enroll-course", async (req, res) => {
 
 
 
-app.listen(2000, () => {
-    console.log("Server is Running On port 2000");
+const PORT = process.env.PORT || 2000;
+
+app.listen(PORT, () => {
+    console.log(`Server is Running On port ${PORT}`);
     console.log("========================================");
     console.log("IMPORTANT: Configure your email settings");
     console.log("Set EMAIL_USER and EMAIL_PASS environment variables");
