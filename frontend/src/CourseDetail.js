@@ -50,21 +50,23 @@ class CourseDetail extends Component {
     };
   }
 
-  componentDidMount() {
-    const urlParts = window.location.pathname.split('/');
-    const courseId = urlParts[urlParts.length - 1]; 
-    
-    if (!this.state.token) {
-      this.props.navigate("/login");
-    } else {
-      this.getCourseDetail(courseId);
-    }
+ componentDidMount() {
+  const courseId = this.props.params?.id;
+  
+  if (!this.state.token) {
+    this.props.navigate("/login");
+  } else if (!courseId) {
+    swal({ text: "Invalid course ID", icon: "error" });
+    this.props.navigate("/dashboard");
+  } else {
+    this.getCourseDetail(courseId);
   }
+}
 
   getCourseDetail = (id) => {
     this.setState({ loading: true });
 
-    axios.get(`https://edulens-backend-nxmw.onrender.com/get-course-by-id/${id}`, { 
+    axios.get(`http://localhost:2000/get-course-by-id/${id}`, { 
       headers: { token: this.state.token }
     })
     .then((res) => {
@@ -92,7 +94,7 @@ class CourseDetail extends Component {
   getYouTubeRecommendations = (topicQuery) => {
     this.setState({ loadingVideos: true, recommendedVideos: [] });
     
-    axios.get(`https://edulens-backend-nxmw.onrender.com/search-videos/${encodeURIComponent(topicQuery)}?maxResults=6`, {
+    axios.get(`http://localhost:2000/search-videos/${encodeURIComponent(topicQuery)}?maxResults=6`, {
       headers: { token: this.state.token }
     })
     .then(response => {
@@ -187,7 +189,7 @@ class CourseDetail extends Component {
     }
 
     // AFTER — sends selectedVideos so they get saved to the DB
-axios.post('https://edulens-backend-nxmw.onrender.com/generate-class-code', 
+axios.post('http://localhost:2000/generate-class-code', 
   {
     courseId: course._id,
     selectedVideos: this.state.selectedVideos.map(v => ({

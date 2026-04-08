@@ -68,7 +68,8 @@ class Register extends React.Component {
       return swal({ text: "Please enter a valid email address", icon: "error" });
     }
     try {
-      await axios.post('https://edulens-backend-nxmw.onrender.com/send-otp', {
+      // http://localhost:2000
+      await axios.post('http://localhost:2000/send-otp', {
         email: this.state.email,
         role: this.state.role
       });
@@ -93,7 +94,8 @@ class Register extends React.Component {
       return swal({ text: "Please enter a valid 6-digit OTP", icon: "warning" });
     }
     try {
-      await axios.post('https://edulens-backend-nxmw.onrender.com/verify-otp', {
+      // http://localhost:2000
+      await axios.post('http://localhost:2000/verify-otp', {
         email: this.state.email,
         otp: this.state.otp
       });
@@ -118,7 +120,9 @@ class Register extends React.Component {
       return swal({ text: "Please select your school and course!", icon: "warning" });
     }
     try {
-      const response = await axios.post('https://edulens-backend-nxmw.onrender.com/register', {
+      // http://localhost:2000
+      // http://localhost:2000
+      const response = await axios.post('http://localhost:2000/register', {
         email: this.state.email,
         password: this.state.password,
         role: this.state.role,

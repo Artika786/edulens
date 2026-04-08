@@ -32,7 +32,7 @@ class StudentDashboard extends Component {
   }
 
   getUserInfo = () => {
-    axios.get('https://edulens-backend-nxmw.onrender.com/get-user-info', {
+    axios.get('http://localhost:2000/get-user-info', {
       headers: { token: this.state.token }
     })
     .then((res) => {
@@ -40,18 +40,20 @@ class StudentDashboard extends Component {
         this.getAvailableCourses();
       });
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log('getUserInfo error:', err.response); // ADD THIS
       this.getAvailableCourses();
     });
-  };
+};
 
-  getAvailableCourses = () => {
+ getAvailableCourses = () => {
     this.setState({ loading: true });
-    axios.get('https://edulens-backend-nxmw.onrender.com/student/available-courses', {
+    axios.get('http://localhost:2000/student/available-courses', {
       headers: { token: this.state.token }
     })
     .then((res) => {
       const courses = res.data.courses || [];
+      console.log('Courses loaded:', courses); // ADD THIS
       const semesterSet = [...new Set(courses.map(c => c.class_name).filter(Boolean))].sort();
 
       const { userInfo } = this.state;
@@ -68,10 +70,11 @@ class StudentDashboard extends Component {
       }, () => this.applyFilter());
     })
     .catch((err) => {
+      console.log('Full error:', err.response); // ADD THIS
       this.setState({ loading: false });
       swal({ text: err.response?.data?.errorMessage || "Failed to load courses", icon: "error" });
     });
-  };
+};
 
   applyFilter = () => {
     const { courses, activeSemester, searchQuery } = this.state;
@@ -111,7 +114,7 @@ class StudentDashboard extends Component {
       return;
     }
     this.setState({ verifyingCode: true });
-    axios.post('https://edulens-backend-nxmw.onrender.com/student/verify-class-code',
+    axios.post('http://localhost:2000/student/verify-class-code',
       { courseId: selectedCourseId, classCode: classCode.trim() },
       { headers: { 'Content-Type': 'application/json', token: this.state.token } }
     )

@@ -33,7 +33,7 @@ class Dashboard extends Component {
   }
 
   getUserInfo = () => {
-    axios.get('https://edulens-backend-nxmw.onrender.com/get-user-info', { headers: { token: this.state.token } })
+    axios.get('http://localhost:2000/get-user-info', { headers: { token: this.state.token } })
       .then((res) => {
         const { school, course } = res.data.user;
         const schoolObj = semesterData.find(s => s.school === school);
@@ -47,7 +47,7 @@ class Dashboard extends Component {
     this.setState({ loading: true });
     let data = `?page=${this.state.page}`;
     if (this.state.search) data += `&search=${this.state.search}`;
-    axios.get(`https://edulens-backend-nxmw.onrender.com/get-courses${data}`, { headers: { token: this.state.token } })
+    axios.get(`http://localhost:2000/get-courses${data}`, { headers: { token: this.state.token } })
       .then((res) => {
         this.setState({
           loading: false,
@@ -60,7 +60,7 @@ class Dashboard extends Component {
   };
 
   checkUsedSubjects = (semester) => {
-    axios.get(`https://edulens-backend-nxmw.onrender.com/get-used-subjects/${encodeURIComponent(semester)}`, { headers: { token: this.state.token } })
+    axios.get(`http://localhost:2000/get-used-subjects/${encodeURIComponent(semester)}`, { headers: { token: this.state.token } })
       .then(res => this.setState({ usedSubjects: res.data.usedSubjects || [] }))
       .catch(err => { console.error("Error fetching used subjects:", err); this.setState({ usedSubjects: [] }); });
   };
@@ -75,7 +75,7 @@ class Dashboard extends Component {
     swal({ title: "Lock Course for All Teachers?", text: "Only you and invited collaborators will be able to edit this course.", icon: "info", buttons: { cancel: "Cancel", confirm: "Lock Course" } })
       .then(willLock => {
         if (willLock) {
-          axios.post("https://edulens-backend-nxmw.onrender.com/toggle-course-lock", { courseId, action: 'lock' }, { headers: { "Content-Type": "application/json", token: this.state.token } })
+          axios.post("http://localhost:2000/toggle-course-lock", { courseId, action: 'lock' }, { headers: { "Content-Type": "application/json", token: this.state.token } })
             .then(res => { swal({ text: res.data.title, icon: "success", timer: 2000 }); this.getCourseData(); })
             .catch(err => swal({ text: err.response?.data?.errorMessage || "Failed to lock course", icon: "error" }));
         }
@@ -87,7 +87,7 @@ class Dashboard extends Component {
     swal({ title: "Unlock Course?", text: "All teachers from your school will be able to edit this course.", icon: "warning", buttons: { cancel: "Cancel", confirm: "Unlock" }, dangerMode: true })
       .then(willUnlock => {
         if (willUnlock) {
-          axios.post("https://edulens-backend-nxmw.onrender.com/toggle-course-lock", { courseId: selectedCourseForLock._id, action: 'unlock' }, { headers: { "Content-Type": "application/json", token: this.state.token } })
+          axios.post("http://localhost:2000/toggle-course-lock", { courseId: selectedCourseForLock._id, action: 'unlock' }, { headers: { "Content-Type": "application/json", token: this.state.token } })
             .then(res => { swal({ text: res.data.title, icon: "success", timer: 2000 }); this.setState({ openLockModal: false, selectedCourseForLock: null }); this.getCourseData(); })
             .catch(err => swal({ text: err.response?.data?.errorMessage || "Failed to unlock course", icon: "error" }));
         }
@@ -96,7 +96,7 @@ class Dashboard extends Component {
 
   loadCollaborators = (courseId) => {
     this.setState({ loadingCollaborators: true });
-    axios.get(`https://edulens-backend-nxmw.onrender.com/get-collaborators/${courseId}`, { headers: { token: this.state.token } })
+    axios.get(`http://localhost:2000/get-collaborators/${courseId}`, { headers: { token: this.state.token } })
       .then(res => this.setState({ collaborators: res.data.collaborators || [], loadingCollaborators: false }))
       .catch(err => { console.error("Load collaborators error:", err); this.setState({ loadingCollaborators: false }); });
   };
@@ -104,7 +104,7 @@ class Dashboard extends Component {
   addCollaborator = () => {
     const { selectedCourseForLock, collaboratorEmail } = this.state;
     if (!collaboratorEmail.trim()) { swal({ text: 'Please enter a teacher email', icon: 'warning' }); return; }
-    axios.post("https://edulens-backend-nxmw.onrender.com/add-collaborator", { courseId: selectedCourseForLock._id, collaboratorEmail: collaboratorEmail.trim() }, { headers: { "Content-Type": "application/json", token: this.state.token } })
+    axios.post("http://localhost:2000/add-collaborator", { courseId: selectedCourseForLock._id, collaboratorEmail: collaboratorEmail.trim() }, { headers: { "Content-Type": "application/json", token: this.state.token } })
       .then(res => { swal({ text: res.data.title, icon: "success", timer: 2000 }); this.setState({ collaboratorEmail: '' }); this.loadCollaborators(selectedCourseForLock._id); })
       .catch(err => swal({ text: err.response?.data?.errorMessage || "Failed to add collaborator", icon: "error" }));
   };
@@ -114,7 +114,7 @@ class Dashboard extends Component {
     swal({ title: "Remove Collaborator?", text: "This teacher will no longer be able to edit the course.", icon: "warning", buttons: true, dangerMode: true })
       .then(willRemove => {
         if (willRemove) {
-          axios.post("https://edulens-backend-nxmw.onrender.com/remove-collaborator", { courseId: selectedCourseForLock._id, collaboratorId }, { headers: { "Content-Type": "application/json", token: this.state.token } })
+          axios.post("http://localhost:2000/remove-collaborator", { courseId: selectedCourseForLock._id, collaboratorId }, { headers: { "Content-Type": "application/json", token: this.state.token } })
             .then(res => { swal({ text: res.data.title, icon: "success", timer: 2000 }); this.loadCollaborators(selectedCourseForLock._id); })
             .catch(err => swal({ text: err.response?.data?.errorMessage || "Failed to remove collaborator", icon: "error" }));
         }
@@ -126,7 +126,7 @@ class Dashboard extends Component {
     swal({ title: "Are you sure?", text: "Once deleted, you will not be able to recover this course!", icon: "warning", buttons: true, dangerMode: true })
       .then(willDelete => {
         if (willDelete) {
-          axios.post("https://edulens-backend-nxmw.onrender.com/delete-course", { id }, { headers: { "Content-Type": "application/json", token: this.state.token } })
+          axios.post("http://localhost:2000/delete-course", { id }, { headers: { "Content-Type": "application/json", token: this.state.token } })
             .then(res => { swal({ text: res.data.title, icon: "success" }); this.setState({ page: 1 }, () => this.getCourseData()); })
             .catch(err => swal({ text: err.response?.data?.errorMessage || "Something went wrong", icon: "error" }));
         }
@@ -157,7 +157,7 @@ class Dashboard extends Component {
       requestData = { class_name, subject_name, unit_title, resource_type, syllabus_text: syllabus_text.trim() };
       contentType = 'application/json';
     }
-    axios.post('https://edulens-backend-nxmw.onrender.com/add-course', requestData, { headers: { 'Content-Type': contentType, 'token': this.state.token } })
+    axios.post('http://localhost:2000/add-course', requestData, { headers: { 'Content-Type': contentType, 'token': this.state.token } })
       .then(res => { swal({ text: res.data.title, icon: 'success' }); this.resetModalState(); this.getCourseData(); })
       .catch(err => swal({ text: err.response?.data?.errorMessage || 'Something went wrong!', icon: 'error' }));
   };
@@ -451,7 +451,7 @@ class Dashboard extends Component {
                             <td style={{color:'var(--text-3)'}}>{row.unit_title}</td>
                             <td>
                               {row.resource_type === 'File' ? (
-                                <a href={`https://edulens-backend-nxmw.onrender.com/${row.syllabus_file_path}`} target="_blank" rel="noopener noreferrer" className="file-link">
+                                <a href={`http://localhost:2000/${row.syllabus_file_path}`} target="_blank" rel="noopener noreferrer" className="file-link">
                                   <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                   View File
                                 </a>
