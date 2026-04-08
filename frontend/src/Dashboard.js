@@ -4,6 +4,7 @@ import swal from 'sweetalert';
 import { withRouter } from "./utils";
 import './ModernDashboard.css';
 import semesterData from './Semester.json';
+const BASE_URL = process.env.REACT_APP_BASE_URL; 
 
 class Dashboard extends Component {
   constructor() {
@@ -32,38 +33,74 @@ class Dashboard extends Component {
     else { this.setState({ token, userId }, () => { this.getUserInfo(); this.getCourseData(); }); }
   }
 
-  getUserInfo = () => {
-    axios.get('http://localhost:2000/get-user-info', { headers: { token: this.state.token } })
-      .then((res) => {
-        const { school, course } = res.data.user;
-        const schoolObj = semesterData.find(s => s.school === school);
-        const courseObj = schoolObj?.courses.find(c => c.courseName === course);
-        this.setState({ selectedSchool: school, selectedCourse: course, availableCourses: schoolObj ? schoolObj.courses : [], availableSemesters: courseObj ? courseObj.semesters : [], userSchool: school, userCourse: course });
-      })
-      .catch(err => console.error('Error fetching user info:', err));
-  };
+getUserInfo = () => {
+  axios.get(`${BASE_URL}/get-user-info`, {
+    headers: { token: this.state.token }
+  })
+    .then((res) => {
+      const { school, course } = res.data.user;
+      const schoolObj = semesterData.find(s => s.school === school);
+      const courseObj = schoolObj?.courses.find(c => c.courseName === course);
 
-  getCourseData = () => {
-    this.setState({ loading: true });
-    let data = `?page=${this.state.page}`;
-    if (this.state.search) data += `&search=${this.state.search}`;
-    axios.get(`http://localhost:2000/get-courses${data}`, { headers: { token: this.state.token } })
-      .then((res) => {
-        this.setState({
-          loading: false,
-          courses: res.data.courses.map(c => ({ ...c, lockedBy: c.lockedBy ? String(c.lockedBy) : null, user_id: String(c.user_id), collaborators: c.collaborators || [] })),
-          pages: res.data.pages,
-          stats: { ...this.state.stats, activeCourses: res.data.courses.length }
-        });
-      })
-      .catch(err => { swal({ text: err.response?.data?.errorMessage || "Something went wrong", icon: "error" }); this.setState({ loading: false, courses: [], pages: 0 }); });
-  };
+      this.setState({
+        selectedSchool: school,
+        selectedCourse: course,
+        availableCourses: schoolObj ? schoolObj.courses : [],
+        availableSemesters: courseObj ? courseObj.semesters : [],
+        userSchool: school,
+        userCourse: course
+      });
+    })
+    .catch(err => console.error("Error fetching user info:", err));
+};
 
-  checkUsedSubjects = (semester) => {
-    axios.get(`http://localhost:2000/get-used-subjects/${encodeURIComponent(semester)}`, { headers: { token: this.state.token } })
-      .then(res => this.setState({ usedSubjects: res.data.usedSubjects || [] }))
-      .catch(err => { console.error("Error fetching used subjects:", err); this.setState({ usedSubjects: [] }); });
-  };
+getCourseData = () => {
+  this.setState({ loading: true });
+
+  let data = `?page=${this.state.page}`;
+  if (this.state.search) data += `&search=${this.state.search}`;
+
+  axios.get(`${BASE_URL}/get-courses${data}`, {
+    headers: { token: this.state.token }
+  })
+    .then((res) => {
+      this.setState({
+        loading: false,
+        courses: res.data.courses.map(c => ({
+          ...c,
+          lockedBy: c.lockedBy ? String(c.lockedBy) : null,
+          user_id: String(c.user_id),
+          collaborators: c.collaborators || []
+        })),
+        pages: res.data.pages,
+        stats: {
+          ...this.state.stats,
+          activeCourses: res.data.courses.length
+        }
+      });
+    })
+    .catch(err => {
+      swal({
+        text: err.response?.data?.errorMessage || "Something went wrong",
+        icon: "error"
+      });
+      this.setState({ loading: false, courses: [], pages: 0 });
+    });
+};
+
+
+checkUsedSubjects = (semester) => {
+  axios.get(`${BASE_URL}/get-used-subjects/${encodeURIComponent(semester)}`, {
+    headers: { token: this.state.token }
+  })
+    .then(res => {
+      this.setState({ usedSubjects: res.data.usedSubjects || [] });
+    })
+    .catch(err => {
+      console.error("Error fetching used subjects:", err);
+      this.setState({ usedSubjects: [] });
+    });
+};
 
   handleLockClick = (course) => {
     if (String(course.user_id) !== String(this.state.userId)) { swal({ text: "Only the course creator can manage lock settings.", icon: "warning" }); return; }
@@ -71,67 +108,204 @@ class Dashboard extends Component {
     else { this.lockCourse(course._id); }
   };
 
-  lockCourse = (courseId) => {
-    swal({ title: "Lock Course for All Teachers?", text: "Only you and invited collaborators will be able to edit this course.", icon: "info", buttons: { cancel: "Cancel", confirm: "Lock Course" } })
-      .then(willLock => {
-        if (willLock) {
-          axios.post("http://localhost:2000/toggle-course-lock", { courseId, action: 'lock' }, { headers: { "Content-Type": "application/json", token: this.state.token } })
-            .then(res => { swal({ text: res.data.title, icon: "success", timer: 2000 }); this.getCourseData(); })
-            .catch(err => swal({ text: err.response?.data?.errorMessage || "Failed to lock course", icon: "error" }));
-        }
+lockCourse = (courseId) => {
+  swal({
+    title: "Lock Course for All Teachers?",
+    text: "Only you and invited collaborators will be able to edit this course.",
+    icon: "info",
+    buttons: { cancel: "Cancel", confirm: "Lock Course" }
+  })
+    .then(willLock => {
+      if (willLock) {
+        axios.post(`${BASE_URL}/toggle-course-lock`,
+          { courseId, action: 'lock' },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              token: this.state.token
+            }
+          }
+        )
+          .then(res => {
+            swal({ text: res.data.title, icon: "success", timer: 2000 });
+            this.getCourseData();
+          })
+          .catch(err =>
+            swal({
+              text: err.response?.data?.errorMessage || "Failed to lock course",
+              icon: "error"
+            })
+          );
+      }
+    });
+};
+
+unlockCourse = () => {
+  const { selectedCourseForLock } = this.state;
+
+  swal({
+    title: "Unlock Course?",
+    text: "All teachers from your school will be able to edit this course.",
+    icon: "warning",
+    buttons: { cancel: "Cancel", confirm: "Unlock" },
+    dangerMode: true
+  })
+    .then(willUnlock => {
+      if (willUnlock) {
+        axios.post(`${BASE_URL}/toggle-course-lock`,
+          { courseId: selectedCourseForLock._id, action: 'unlock' },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              token: this.state.token
+            }
+          }
+        )
+          .then(res => {
+            swal({ text: res.data.title, icon: "success", timer: 2000 });
+            this.setState({ openLockModal: false, selectedCourseForLock: null });
+            this.getCourseData();
+          })
+          .catch(err =>
+            swal({
+              text: err.response?.data?.errorMessage || "Failed to unlock course",
+              icon: "error"
+            })
+          );
+      }
+    });
+};
+
+
+loadCollaborators = (courseId) => {
+  this.setState({ loadingCollaborators: true });
+
+  axios.get(`${BASE_URL}/get-collaborators/${courseId}`, {
+    headers: { token: this.state.token }
+  })
+    .then(res => {
+      this.setState({
+        collaborators: res.data.collaborators || [],
+        loadingCollaborators: false
       });
-  };
+    })
+    .catch(err => {
+      console.error("Load collaborators error:", err);
+      this.setState({ loadingCollaborators: false });
+    });
+};
 
-  unlockCourse = () => {
-    const { selectedCourseForLock } = this.state;
-    swal({ title: "Unlock Course?", text: "All teachers from your school will be able to edit this course.", icon: "warning", buttons: { cancel: "Cancel", confirm: "Unlock" }, dangerMode: true })
-      .then(willUnlock => {
-        if (willUnlock) {
-          axios.post("http://localhost:2000/toggle-course-lock", { courseId: selectedCourseForLock._id, action: 'unlock' }, { headers: { "Content-Type": "application/json", token: this.state.token } })
-            .then(res => { swal({ text: res.data.title, icon: "success", timer: 2000 }); this.setState({ openLockModal: false, selectedCourseForLock: null }); this.getCourseData(); })
-            .catch(err => swal({ text: err.response?.data?.errorMessage || "Failed to unlock course", icon: "error" }));
-        }
-      });
-  };
 
-  loadCollaborators = (courseId) => {
-    this.setState({ loadingCollaborators: true });
-    axios.get(`http://localhost:2000/get-collaborators/${courseId}`, { headers: { token: this.state.token } })
-      .then(res => this.setState({ collaborators: res.data.collaborators || [], loadingCollaborators: false }))
-      .catch(err => { console.error("Load collaborators error:", err); this.setState({ loadingCollaborators: false }); });
-  };
+addCollaborator = () => {
+  const { selectedCourseForLock, collaboratorEmail } = this.state;
 
-  addCollaborator = () => {
-    const { selectedCourseForLock, collaboratorEmail } = this.state;
-    if (!collaboratorEmail.trim()) { swal({ text: 'Please enter a teacher email', icon: 'warning' }); return; }
-    axios.post("http://localhost:2000/add-collaborator", { courseId: selectedCourseForLock._id, collaboratorEmail: collaboratorEmail.trim() }, { headers: { "Content-Type": "application/json", token: this.state.token } })
-      .then(res => { swal({ text: res.data.title, icon: "success", timer: 2000 }); this.setState({ collaboratorEmail: '' }); this.loadCollaborators(selectedCourseForLock._id); })
-      .catch(err => swal({ text: err.response?.data?.errorMessage || "Failed to add collaborator", icon: "error" }));
-  };
+  if (!collaboratorEmail.trim()) {
+    swal({ text: 'Please enter a teacher email', icon: 'warning' });
+    return;
+  }
 
-  removeCollaborator = (collaboratorId) => {
-    const { selectedCourseForLock } = this.state;
-    swal({ title: "Remove Collaborator?", text: "This teacher will no longer be able to edit the course.", icon: "warning", buttons: true, dangerMode: true })
-      .then(willRemove => {
-        if (willRemove) {
-          axios.post("http://localhost:2000/remove-collaborator", { courseId: selectedCourseForLock._id, collaboratorId }, { headers: { "Content-Type": "application/json", token: this.state.token } })
-            .then(res => { swal({ text: res.data.title, icon: "success", timer: 2000 }); this.loadCollaborators(selectedCourseForLock._id); })
-            .catch(err => swal({ text: err.response?.data?.errorMessage || "Failed to remove collaborator", icon: "error" }));
-        }
-      });
-  };
+  axios.post(`${BASE_URL}/add-collaborator`,
+    {
+      courseId: selectedCourseForLock._id,
+      collaboratorEmail: collaboratorEmail.trim()
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        token: this.state.token
+      }
+    }
+  )
+    .then(res => {
+      swal({ text: res.data.title, icon: "success", timer: 2000 });
+      this.setState({ collaboratorEmail: '' });
+      this.loadCollaborators(selectedCourseForLock._id);
+    })
+    .catch(err =>
+      swal({
+        text: err.response?.data?.errorMessage || "Failed to add collaborator",
+        icon: "error"
+      })
+    );
+};
 
-  deleteCourse = (id, courseCreatorId) => {
-    if (String(courseCreatorId) !== String(this.state.userId)) { swal({ text: "Only the course creator can delete this course.", icon: "warning" }); return; }
-    swal({ title: "Are you sure?", text: "Once deleted, you will not be able to recover this course!", icon: "warning", buttons: true, dangerMode: true })
-      .then(willDelete => {
-        if (willDelete) {
-          axios.post("http://localhost:2000/delete-course", { id }, { headers: { "Content-Type": "application/json", token: this.state.token } })
-            .then(res => { swal({ text: res.data.title, icon: "success" }); this.setState({ page: 1 }, () => this.getCourseData()); })
-            .catch(err => swal({ text: err.response?.data?.errorMessage || "Something went wrong", icon: "error" }));
-        }
-      });
-  };
+
+removeCollaborator = (collaboratorId) => {
+  const { selectedCourseForLock } = this.state;
+
+  swal({
+    title: "Remove Collaborator?",
+    text: "This teacher will no longer be able to edit the course.",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true
+  })
+    .then(willRemove => {
+      if (willRemove) {
+        axios.post(`${BASE_URL}/remove-collaborator`,
+          {
+            courseId: selectedCourseForLock._id,
+            collaboratorId
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              token: this.state.token
+            }
+          }
+        )
+          .then(res => {
+            swal({ text: res.data.title, icon: "success", timer: 2000 });
+            this.loadCollaborators(selectedCourseForLock._id);
+          })
+          .catch(err =>
+            swal({
+              text: err.response?.data?.errorMessage || "Failed to remove collaborator",
+              icon: "error"
+            })
+          );
+      }
+    });
+};
+
+
+deleteCourse = (id, courseCreatorId) => {
+  if (String(courseCreatorId) !== String(this.state.userId)) {
+    swal({ text: "Only the course creator can delete this course.", icon: "warning" });
+    return;
+  }
+
+  swal({
+    title: "Are you sure?",
+    text: "Once deleted, you will not be able to recover this course!",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true
+  })
+    .then(willDelete => {
+      if (willDelete) {
+        axios.post(`${BASE_URL}/delete-course`,
+          { id },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              token: this.state.token
+            }
+          }
+        )
+          .then(res => {
+            swal({ text: res.data.title, icon: "success" });
+            this.setState({ page: 1 }, () => this.getCourseData());
+          })
+          .catch(err =>
+            swal({
+              text: err.response?.data?.errorMessage || "Something went wrong",
+              icon: "error"
+            })
+          );
+      }
+    });
+};
 
   viewCourse = (courseId, isLocked, courseCreatorId, collaborators) => {
     const isCourseCreator = String(courseCreatorId) === String(this.state.userId);
@@ -157,9 +331,23 @@ class Dashboard extends Component {
       requestData = { class_name, subject_name, unit_title, resource_type, syllabus_text: syllabus_text.trim() };
       contentType = 'application/json';
     }
-    axios.post('http://localhost:2000/add-course', requestData, { headers: { 'Content-Type': contentType, 'token': this.state.token } })
-      .then(res => { swal({ text: res.data.title, icon: 'success' }); this.resetModalState(); this.getCourseData(); })
-      .catch(err => swal({ text: err.response?.data?.errorMessage || 'Something went wrong!', icon: 'error' }));
+axios.post(`${BASE_URL}/add-course`, requestData, {
+  headers: {
+    'Content-Type': contentType,
+    token: this.state.token
+  }
+})
+  .then(res => {
+    swal({ text: res.data.title, icon: 'success' });
+    this.resetModalState();
+    this.getCourseData();
+  })
+  .catch(err =>
+    swal({
+      text: err.response?.data?.errorMessage || 'Something went wrong!',
+      icon: 'error'
+    })
+  );
   };
 
   resetModalState = () => {

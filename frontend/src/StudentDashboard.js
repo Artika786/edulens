@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from "./utils";
 import axios from 'axios';
 import swal from 'sweetalert';
-
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 class StudentDashboard extends Component {
   constructor(props) {
     super(props);
@@ -32,7 +32,7 @@ class StudentDashboard extends Component {
   }
 
   getUserInfo = () => {
-    axios.get('http://localhost:2000/get-user-info', {
+    axios.get(BASE_URL+"/get-user-info", {
       headers: { token: this.state.token }
     })
     .then((res) => {
@@ -48,7 +48,7 @@ class StudentDashboard extends Component {
 
  getAvailableCourses = () => {
     this.setState({ loading: true });
-    axios.get('http://localhost:2000/student/available-courses', {
+    axios.get(BASE_URL + "/student/available-courses", {
       headers: { token: this.state.token }
     })
     .then((res) => {
@@ -114,7 +114,7 @@ class StudentDashboard extends Component {
       return;
     }
     this.setState({ verifyingCode: true });
-    axios.post('http://localhost:2000/student/verify-class-code',
+    axios.post(BASE_URL+"/student/verify-class-code",
       { courseId: selectedCourseId, classCode: classCode.trim() },
       { headers: { 'Content-Type': 'application/json', token: this.state.token } }
     )

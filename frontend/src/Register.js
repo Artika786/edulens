@@ -4,7 +4,7 @@ import { withRouter } from "./utils";
 import axios from "axios";
 import "./Auth.css";
 import semesterData from './Semester.json';
-
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 class Register extends React.Component {
   constructor(props) {
     super(props);
@@ -69,10 +69,10 @@ class Register extends React.Component {
     }
     try {
       // http://localhost:2000
-      await axios.post('http://localhost:2000/send-otp', {
-        email: this.state.email,
-        role: this.state.role
-      });
+      await axios.post(`${BASE_URL}/send-otp`, {
+      email: this.state.email,
+      role: this.state.role
+    });
       this.setState({ isOtpSent: true, canResendOtp: false, otpTimer: 60 });
       this.timerInterval = setInterval(() => {
         this.setState(prev => {
@@ -95,10 +95,10 @@ class Register extends React.Component {
     }
     try {
       // http://localhost:2000
-      await axios.post('http://localhost:2000/verify-otp', {
-        email: this.state.email,
-        otp: this.state.otp
-      });
+      await axios.post(`${BASE_URL}/verify-otp`, {
+      email: this.state.email,
+      otp: this.state.otp
+    });
       this.setState({ isOtpVerified: true });
       swal({ text: "Email verified successfully!", icon: "success", timer: 2000 });
     } catch (err) {
@@ -122,13 +122,13 @@ class Register extends React.Component {
     try {
       // http://localhost:2000
       // http://localhost:2000
-      const response = await axios.post('http://localhost:2000/register', {
-        email: this.state.email,
-        password: this.state.password,
-        role: this.state.role,
-        school: this.state.school,
-        course: this.state.course
-      });
+      const response = await axios.post(`${BASE_URL}/register`, {
+      email: this.state.email,
+      password: this.state.password,
+      role: this.state.role,
+      school: this.state.school,
+      course: this.state.course
+    });
       swal({ text: response.data.message || "Registration successful!", icon: "success", timer: 2000 });
       this.props.navigate("/");
     } catch (err) {

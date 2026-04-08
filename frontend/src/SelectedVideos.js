@@ -3,7 +3,7 @@ import { withRouter } from "./utils";
 import axios from 'axios';
 import swal from 'sweetalert';
 import './SelectedVideos.css';
-
+const BASE_URL = process.env.REACT_APP_BASE_URL; 
 class SelectedVideos extends Component {
   constructor(props) {
     super(props);
@@ -28,7 +28,7 @@ class SelectedVideos extends Component {
 
     this.setState({ loadingCode: true });
 
-    axios.post('https://edulens-backend-nxmw.onrender.com/generate-class-code',
+      axios.post(`${BASE_URL}/generate-class-code`,
       {
         courseId,
         // ← Send the selected videos so they get saved to the DB

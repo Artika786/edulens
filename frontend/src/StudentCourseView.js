@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from "./utils";
 import swal from 'sweetalert';
-
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 class StudentCourseView extends Component {
   constructor(props) {
     super(props);

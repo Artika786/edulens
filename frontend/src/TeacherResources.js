@@ -3,7 +3,7 @@ import { withRouter } from "./utils";
 import axios from 'axios';
 import swal from 'sweetalert';
 import './TeacherResources.css';
-
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 class TeacherResources extends Component {
   constructor(props) {
     super(props);
@@ -30,7 +30,7 @@ class TeacherResources extends Component {
   }
 
   fetchCourses = () => {
-    axios.get('http://localhost:2000/get-courses', {
+    axios.get(BASE_URL+"/get-courses", {
       headers: { token: this.state.token }
     })
     .then(res => {
@@ -53,7 +53,7 @@ class TeacherResources extends Component {
       loadingDetail: { ...prev.loadingDetail, [courseId]: true } 
     }));
     
-    axios.get(`http://localhost:2000/get-course-by-id/${courseId}`, {
+    axios.get(`${BASE_URL}/get-course-by-id/${courseId}`, {
       headers: { token: this.state.token }
     })
     .then(res => {
@@ -108,7 +108,7 @@ class TeacherResources extends Component {
       savingVideos: { ...prev.savingVideos, [courseId]: true } 
     }));
 
-    axios.post('http://localhost:2000/save-course-videos',
+    axios.post(BASE_URL+"/save-course-videos",
       {
         courseId,
         selectedVideos: localVideos.map(v => ({
@@ -159,7 +159,7 @@ class TeacherResources extends Component {
       generatingCode: { ...prev.generatingCode, [courseId]: true } 
     }));
     
-    axios.post('http://localhost:2000/generate-class-code',
+    axios.post(BASE_URL+"/generate-class-code",
       { courseId, selectedVideos: [] },
       { 
         headers: { 
@@ -204,7 +204,7 @@ class TeacherResources extends Component {
     
     const updated = detail.selectedVideos.filter(v => v.videoId !== videoId);
 
-    axios.post('http://localhost:2000/save-course-videos',
+    axios.post(BASE_URL+"/save-course-videos",
       { courseId, selectedVideos: updated },
       { 
         headers: { 

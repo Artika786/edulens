@@ -3,7 +3,7 @@ import { withRouter } from "./utils";
 import axios from 'axios';
 import swal from 'sweetalert';
 import './CourseDetail.css';
-
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 class CourseDetail extends Component {
   constructor(props) {
     super(props);
@@ -66,7 +66,7 @@ class CourseDetail extends Component {
   getCourseDetail = (id) => {
     this.setState({ loading: true });
 
-    axios.get(`http://localhost:2000/get-course-by-id/${id}`, { 
+    axios.get(`${BASE_URL}/get-course-by-id/${id}`, { 
       headers: { token: this.state.token }
     })
     .then((res) => {
@@ -94,7 +94,7 @@ class CourseDetail extends Component {
   getYouTubeRecommendations = (topicQuery) => {
     this.setState({ loadingVideos: true, recommendedVideos: [] });
     
-    axios.get(`http://localhost:2000/search-videos/${encodeURIComponent(topicQuery)}?maxResults=6`, {
+    axios.get(`${BASE_URL}/search-videos/${encodeURIComponent(topicQuery)}?maxResults=6`, {
       headers: { token: this.state.token }
     })
     .then(response => {
@@ -186,10 +186,8 @@ class CourseDetail extends Component {
         icon: "error"
       });
       return;
-    }
-
-    // AFTER — sends selectedVideos so they get saved to the DB
-axios.post('http://localhost:2000/generate-class-code', 
+      }
+  axios.post(`${BASE_URL}/generate-class-code`, 
   {
     courseId: course._id,
     selectedVideos: this.state.selectedVideos.map(v => ({

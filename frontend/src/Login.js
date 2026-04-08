@@ -3,6 +3,7 @@ import swal from "sweetalert";
 import { withRouter } from "./utils";
 import axios from "axios";
 import "./Auth.css";
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 class Login extends React.Component {
   constructor(props) {
@@ -41,8 +42,7 @@ class Login extends React.Component {
     if (!this.validateEmail(this.state.email)) {
       return swal({ text: "Please enter a valid email address", icon: "error" });
     }
-    // https://edulens-backend-nxmw.onrender.com/login
-    axios.post("http://localhost:2000/login", {
+    axios.post(BASE_URL + "/login", {
       email: this.state.email,
       password: this.state.password,
       role: this.state.role
