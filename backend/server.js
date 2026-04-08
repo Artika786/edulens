@@ -12,16 +12,18 @@ const axios = require('axios');
 const nodemailer = require('nodemailer');
 
 // Database connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => {
-  console.log("✅ MongoDB Connected Successfully");
-})
-.catch((err) => {
-  console.error("❌ MongoDB Connection Error:", err);
-});
+// mongoose.connect(process.env.MONGO_URI)
+// .then(() => {
+//   console.log("✅ MongoDB Connected Successfully");
+
+//   app.listen(process.env.PORT || 2000, () => {
+//     console.log("🚀 Server running");
+//   });
+
+// })
+// .catch((err) => {
+//   console.error("❌ MongoDB Connection Error:", err);
+// });
 
 // --- OTP/EMAIL CONFIGURATION ---
 const otpStore = new Map();
@@ -311,6 +313,7 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     try {
         const { email, password, role } = req.body;
+        console.log("received body: ", email, password, role);
 
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -319,9 +322,10 @@ app.post('/login', async (req, res) => {
                 errorMessage: 'Invalid email format' 
             });
         }
-
+        console.log("email verified via regex")
         // Find user by email and role
         const user = await User.findOne({ username: email, role });
+        console.log("db response for user: ", user);
         
         if (!user) {
             return res.status(400).json({ 
@@ -337,6 +341,7 @@ app.post('/login', async (req, res) => {
                 errorMessage: 'Invalid email or password' 
             });
         }
+        console.log("bcrypted password");
 
         // Generate token
         const token = jwt.sign(
@@ -344,6 +349,7 @@ app.post('/login', async (req, res) => {
             'shhhhh11111',
             { expiresIn: '24h' }
         );
+        console.log(token);
 
         res.status(200).json({ 
             token: token,
@@ -950,13 +956,17 @@ app.post("/student/enroll-course", async (req, res) => {
 
 const PORT = process.env.PORT || 2000;
 
-app.listen(PORT, () => {
-    console.log(`Server is Running On port ${PORT}`);
-    console.log("========================================");
-    console.log("IMPORTANT: Configure your email settings");
-    console.log("Set EMAIL_USER and EMAIL_PASS environment variables");
-    console.log("Or update them directly in the code");
-    console.log("========================================");
+mongoose.connect(process.env.MONGO_URI)
+.then(() => {
+  console.log("✅ MongoDB Connected Successfully");
+
+  app.listen(process.env.PORT || 2000, () => {
+    console.log("🚀 Server running");
+  });
+
+})
+.catch((err) => {
+  console.error("❌ MongoDB Connection Error:", err);
 });
 
 module.exports = app;
